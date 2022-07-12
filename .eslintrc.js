@@ -10,5 +10,8 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint'],
-  rules: {}
-}
+  rules: {
+    semi: 'off',
+    '@typescript-eslint/semi': ['error']
+  }
+};

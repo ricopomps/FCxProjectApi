@@ -1,2 +1,3 @@
-const oi = 'oi'
-console.log(oi)
+import app from './app';
+
+app.listen(5000);
