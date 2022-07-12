@@ -1,1 +1,2 @@
-console.log("oi")
+const oi = 'oi'
+console.log(oi)
