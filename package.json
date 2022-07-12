@@ -1,0 +1,17 @@
+{
+  "name": "FCxProjectApi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ricopomps/FCxProjectApi.git",
+  "author": "ricopomps <ricardopompiliodossantos@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.ts",
+    "build": "sucrase ./src -d ./dist --transforms typescript,imports"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19",
+    "sucrase": "^3.23.0",
+    "typescript": "^4.7.4"
+  }
+}
