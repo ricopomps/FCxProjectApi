@@ -7,6 +7,12 @@ class UserController {
     return res.json(users);
   }
 
+  public async findById (req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const users = await UserService.findById(id);
+    return res.json(users);
+  }
+
   public async create (req: Request, res: Response): Promise<Response> {
     const user = req.body;
     const createdUser = await UserService.create(user);

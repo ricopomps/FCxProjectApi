@@ -6,6 +6,10 @@ class UserService {
     return await UserRepository.index();
   }
 
+  public async findById (id): Promise<Response> {
+    return await UserRepository.findById(id);
+  }
+
   public async create (user:UserInterface) {
     return await UserRepository.create(user);
   }

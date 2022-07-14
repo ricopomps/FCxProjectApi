@@ -6,6 +6,10 @@ class UserRepository {
     return await User.find();
   }
 
+  public async findById (id:mongoose.Types.ObjectId): Promise<Response> {
+    return await User.findById(id);
+  }
+
   public async create (user:UserInterface) {
     return await User.create(user);
   }
