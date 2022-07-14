@@ -6,10 +6,10 @@ export interface UserInterface extends Document {
   password: string;
   email: string;
   phone: string;
-  cpf: string;
+  cpf: Date;
   birthdate: string;
   motherName: string;
-  status: string;
+  status: number;
 }
 
 const UserSchema = new Schema(
@@ -20,9 +20,9 @@ const UserSchema = new Schema(
     email: String,
     phone: String,
     cpf: String,
-    birthdate: String,
+    birthdate: Date,
     motherName: String,
-    status: String
+    status: Number
   },
   { timestamps: true }
 );

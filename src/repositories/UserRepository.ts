@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import User, { UserInterface } from '../schemas/User';
 
 class UserRepository {
@@ -7,6 +8,14 @@ class UserRepository {
 
   public async create (user:UserInterface) {
     return await User.create(user);
+  }
+
+  public async update (user:UserInterface) {
+    return await User.findByIdAndUpdate(user._id, user, { new: true });
+  }
+
+  public async delete (user:UserInterface) {
+    return await User.deleteOne({ _id: mongoose.Types.ObjectId(user._id) });
   }
 }
 export default new UserRepository();

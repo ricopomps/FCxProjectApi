@@ -12,6 +12,18 @@ class UserController {
     const createdUser = await UserService.create(user);
     return res.json(createdUser);
   }
+
+  public async update (req: Request, res: Response): Promise<Response> {
+    const user = req.body;
+    const updatedUser = await UserService.update(user);
+    return res.json(updatedUser);
+  }
+
+  public async delete (req: Request, res: Response): Promise<Response> {
+    const user = req.body;
+    const deletedUser = await UserService.delete(user);
+    return res.json(deletedUser);
+  }
 }
 
 export default new UserController();
