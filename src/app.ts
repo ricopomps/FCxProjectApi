@@ -6,13 +6,12 @@ import dotenv from 'dotenv';
 import routes from './routes/routes';
 
 class App {
-  public express: express.Aplication;
+  public express: express.Application;
 
-  public onstructor () {
+  constructor () {
     this.express = express();
 
     dotenv.config();
-
     this.middlewares();
     this.database();
     this.routes();
@@ -24,7 +23,9 @@ class App {
   }
 
   private database (): void {
-    mongoose.connect(process.env.CONNECTION_STRING, { useNewUrlParser: true });
+    mongoose.connect(process.env.CONNECTION_STRING, {
+      useNewUrlParser: true
+    });
   }
 
   private routes (): void {
