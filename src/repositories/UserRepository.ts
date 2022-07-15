@@ -6,6 +6,12 @@ class UserRepository {
     return await User.find();
   }
 
+  public async findByProperties (properties: { key:string, keyValue: string | Date }[]) {
+    User.find({
+      $or: properties.map(item => ({ [item.key]: item.keyValue }))
+    });
+  }
+
   public async findById (id:mongoose.Types.ObjectId): Promise<Response> {
     return await User.findById(id);
   }

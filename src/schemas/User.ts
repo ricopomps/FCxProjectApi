@@ -6,8 +6,8 @@ export interface UserInterface extends Document {
   password: string;
   email: string;
   phone: string;
-  cpf: Date;
-  birthdate: string;
+  cpf: string;
+  birthdate: Date;
   motherName: string;
   status: number;
 }
