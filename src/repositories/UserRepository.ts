@@ -7,9 +7,15 @@ class UserRepository {
   }
 
   public async findByProperties (properties: { key:string, keyValue: string | Date }[]) {
-    User.find({
+    return await User.find({
       $or: properties.map(item => ({ [item.key]: item.keyValue }))
     });
+  }
+
+  public async findByPropertiesIncluding (properties: { key:string, keyValue: string | Date }[]) {
+    const reducedProperties = properties.reduce(
+      (obj, item) => ({ ...obj, [item.key]: item.keyValue }), {});
+    return await User.find(reducedProperties);
   }
 
   public async findById (id:mongoose.Types.ObjectId): Promise<Response> {

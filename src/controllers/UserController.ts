@@ -11,6 +11,16 @@ class UserController {
     }
   }
 
+  public async login (req: Request, res: Response): Promise<Response> {
+    try {
+      const user = req.body;
+      const loggedUser = await UserService.login(user);
+      return res.json(loggedUser);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  }
+
   public async findById (req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;

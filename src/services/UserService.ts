@@ -1,9 +1,17 @@
-import { UserInterface } from '../schemas/User';
+import { UserInterface } from './../schemas/User';
 import UserRepository from '../repositories/UserRepository';
 
 class UserService {
   public async index () {
     return await UserRepository.index();
+  }
+
+  public async login (user: {login:string, password:string}) {
+    const loggedUser = await UserRepository.findByPropertiesIncluding([
+      { key: 'login', keyValue: user.login },
+      { key: 'password', keyValue: user.password }]);
+    if (!loggedUser) throw new Error('Usuário inválido');
+    return loggedUser;
   }
 
   public async findById (id): Promise<Response> {
@@ -18,6 +26,7 @@ class UserService {
       { key: 'cpf', keyValue: user.cpf }
     ]
     );
+
     if (existingUser) throw new Error('Usuário já existe');
 
     return await UserRepository.create(user);
