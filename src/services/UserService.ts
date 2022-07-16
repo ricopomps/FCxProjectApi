@@ -10,7 +10,7 @@ class UserService {
     const loggedUser = await UserRepository.findByPropertiesIncluding([
       { key: 'login', keyValue: user.login },
       { key: 'password', keyValue: user.password }]);
-    if (!loggedUser) throw new Error('Usuário inválido');
+    if (!loggedUser.length) throw new Error('Usuário inválido');
     return loggedUser;
   }
 
