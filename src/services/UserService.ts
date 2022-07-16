@@ -27,7 +27,7 @@ class UserService {
     ]
     );
 
-    if (existingUser) throw new Error('Usuário já existe');
+    if (existingUser.length) throw new Error('Usuário já existe');
 
     return await UserRepository.create(user);
   }
