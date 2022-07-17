@@ -9,5 +9,6 @@ routes.post('/', UserController.create);
 routes.put('/', UserController.update);
 routes.delete('/', UserController.delete);
 routes.post('/login', UserController.login);
+routes.post('/recover', UserController.recoverPassword);
 
 export default routes;

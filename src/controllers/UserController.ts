@@ -22,6 +22,16 @@ class UserController {
     }
   }
 
+  public async recoverPassword (req: Request, res: Response): Promise<Response> {
+    try {
+      const user = req.body;
+      const recoveredUser = await UserService.recoverPassword(user);
+      return res.json(recoveredUser);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  }
+
   public async findById (req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;

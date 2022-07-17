@@ -32,6 +32,12 @@ class UserRepository {
     return await User.find(reducedProperties);
   }
 
+  public async findOneByPropertiesIncluding (properties: { key:string, keyValue: string | Date }[]) {
+    const reducedProperties = properties.reduce(
+      (obj, item) => ({ ...obj, [item.key]: item.keyValue }), {});
+    return await User.findOne(reducedProperties);
+  }
+
   public async findById (id:mongoose.Types.ObjectId): Promise<Response> {
     return await User.findById(id);
   }
@@ -45,6 +51,7 @@ class UserRepository {
   }
 
   public async update (user:UserInterface) {
+    console.log(user);
     return await User.findByIdAndUpdate(user._id, user, { new: true });
   }
 

@@ -84,14 +84,25 @@ class UserService {
 
   public async login (user: {login:string, password:string}) {
     const loggedUser = await UserRepository.login(user.login);
-    if (user == null || !(await bcrypt.compare(user.password, loggedUser.password)) || user.status !== '1') throw new Error('Usuário inválido');
-    try {
-      const accessToken = jwt.sign({ loggedUser }, process.env.ACCESS_TOKEN_SECRET);
+    if (user == null || !(await bcrypt.compare(user.password, loggedUser.password)) || loggedUser.status !== 1) throw new Error('Usuário inválido');
+    const accessToken = jwt.sign({ loggedUser }, process.env.ACCESS_TOKEN_SECRET);
 
-      return ({ accessToken, loggedUser });
-    } catch (error) {
-      return null;
-    }
+    return ({ accessToken, loggedUser });
+  }
+
+  public async recoverPassword (user: {login:string, cpf:string, email:string, motherName:string, password:string}) {
+    const existingUser = await UserRepository.findOneByPropertiesIncluding([
+      { key: 'email', keyValue: user.email },
+      { key: 'login', keyValue: user.login },
+      { key: 'motherName', keyValue: user.motherName },
+      { key: 'cpf', keyValue: user.cpf }
+    ]
+    );
+    if (existingUser.length < 1 || existingUser.status !== 1) throw new Error('Usuário inválido');
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    existingUser.password = hashedPassword;
+    const updatedUser = await UserRepository.update(existingUser);
+    return (updatedUser);
   }
 
   public async findById (id): Promise<Response> {
