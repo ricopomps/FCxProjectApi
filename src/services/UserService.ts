@@ -2,8 +2,82 @@ import { UserInterface } from './../schemas/User';
 import UserRepository from '../repositories/UserRepository';
 
 class UserService {
-  public async index () {
-    return await UserRepository.index();
+  public async index (limit, baseQuery) {
+    let query = {};
+    const {
+      name, login, cpf, ageGroup, maxInsertionDate, minInsertionDate,
+      maxBirthDate, minBirthDate, minUpdateDate, maxUpdateDate, status, page = '1'
+    } = baseQuery;
+    const skip = limit * (page - 1);
+
+    if (name) {
+      query = { ...query, name: { $regex: name, $options: 'i' } };
+    }
+    if (login) {
+      query = { ...query, login: { $regex: login, $options: 'i' } };
+    }
+    if (cpf) {
+      query = { ...query, cpf: { $regex: cpf, $options: 'i' } };
+    }
+    if (ageGroup) {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = d.getMonth();
+      const day = d.getDate();
+      let minDate;
+      let maxDate;
+      switch (parseInt(ageGroup)) {
+        case 1:
+          minDate = new Date(year - 26, month, day);
+          maxDate = new Date(year - 18, month, day);
+          query = { ...query, birthdate: { $lte: maxDate, $gte: minDate } };
+          break;
+        case 2:
+          minDate = new Date(year - 31, month, day);
+          maxDate = new Date(year - 25, month, day);
+          query = { ...query, birthdate: { $lte: maxDate, $gte: minDate } };
+          break;
+        case 3:
+          minDate = new Date(year - 36, month, day);
+          maxDate = new Date(year - 30, month, day);
+          query = { ...query, birthdate: { $lte: maxDate, $gte: minDate } };
+          break;
+        case 4:
+          minDate = new Date(year - 40, month, day);
+          query = { ...query, birthdate: { $lte: minDate } };
+          break;
+        default:
+          break;
+      }
+    }
+    if (maxBirthDate) {
+      query = { ...query, birthdate: { $lte: new Date(maxBirthDate) } };
+    }
+    if (minBirthDate) {
+      query = { ...query, birthdate: { $gte: new Date(minBirthDate) } };
+    }
+    if (maxUpdateDate) {
+      query = {
+        ...query,
+        updatedAt: { $lte: new Date(maxUpdateDate) }
+      };
+    }
+    if (minUpdateDate) {
+      query = {
+        ...query,
+        updatedAt: { $gte: new Date(minUpdateDate) }
+      };
+    }
+    if (maxInsertionDate) {
+      query = { ...query, createdAt: { $lte: new Date(maxInsertionDate) } };
+    }
+    if (minInsertionDate) {
+      query = { ...query, createdAt: { $gte: new Date(minInsertionDate) } };
+    }
+    if (status) {
+      query = { ...query, status: parseInt(status) };
+    }
+    return await UserRepository.index(skip, limit, query);
   }
 
   public async login (user: {login:string, password:string}) {

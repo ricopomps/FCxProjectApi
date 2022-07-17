@@ -2,8 +2,21 @@ import mongoose from 'mongoose';
 import User, { UserInterface } from '../schemas/User';
 
 class UserRepository {
-  public async index () {
-    return await User.find();
+  public async index (skip, limit, query) {
+    const [{ paginatedResult, totalCount }] = await User.aggregate([
+      {
+        $facet: {
+          paginatedResult: [
+            { $match: query },
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          totalCount: [
+            { $match: query },
+            { $count: 'totalCount' }]
+        }
+      }]);
+    return { paginatedResult, totalCount: totalCount[0]?.totalCount };
   }
 
   public async findByProperties (properties: { key:string, keyValue: string | Date }[]) {

@@ -4,7 +4,8 @@ import UserService from '../services/UserService';
 class UserController {
   public async index (req: Request, res: Response): Promise<Response> {
     try {
-      const users = await UserService.index();
+      const { limit = 10, ...query } = req.query;
+      const users = await UserService.index(parseInt(limit), query);
       return res.json(users);
     } catch (error) {
       return res.status(400).json(error.message);
