@@ -128,8 +128,8 @@ class UserService {
     return await UserRepository.update(user);
   }
 
-  public async delete (user:UserInterface) {
-    return await UserRepository.delete(user);
+  public async delete () {
+    return await UserRepository.delete();
   }
 
   private validateUser (user:UserInterface): void {

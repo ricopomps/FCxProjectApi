@@ -64,8 +64,7 @@ class UserController {
 
   public async delete (req: Request, res: Response): Promise<Response> {
     try {
-      const user = req.body;
-      const deletedUser = await UserService.delete(user);
+      const deletedUser = await UserService.delete();
       return res.json(deletedUser);
     } catch (error) {
       return res.status(400).json(error.message);
