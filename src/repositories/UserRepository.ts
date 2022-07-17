@@ -9,6 +9,7 @@ class UserRepository {
           paginatedResult: [
             { $match: query },
             { $skip: skip },
+            { $unset: 'password' },
             { $limit: limit }
           ],
           totalCount: [
@@ -33,6 +34,10 @@ class UserRepository {
 
   public async findById (id:mongoose.Types.ObjectId): Promise<Response> {
     return await User.findById(id);
+  }
+
+  public async login (login): Promise<Response> {
+    return await User.findOne({ login }).select('+password').lean();
   }
 
   public async create (user:UserInterface) {

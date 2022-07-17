@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { UserInterface } from './../schemas/User';
 import UserRepository from '../repositories/UserRepository';
 
@@ -81,11 +83,15 @@ class UserService {
   }
 
   public async login (user: {login:string, password:string}) {
-    const loggedUser = await UserRepository.findByPropertiesIncluding([
-      { key: 'login', keyValue: user.login },
-      { key: 'password', keyValue: user.password }]);
-    if (!loggedUser.length) throw new Error('Usuário inválido');
-    return loggedUser;
+    const loggedUser = await UserRepository.login(user.login);
+    if (user == null || !(await bcrypt.compare(user.password, loggedUser.password))) throw new Error('Usuário inválido');
+    try {
+      const accessToken = jwt.sign({ loggedUser }, process.env.ACCESS_TOKEN_SECRET);
+
+      return ({ accessToken, loggedUser });
+    } catch (error) {
+      return null;
+    }
   }
 
   public async findById (id): Promise<Response> {
@@ -102,8 +108,9 @@ class UserService {
     );
 
     if (existingUser.length) throw new Error('Usuário já existe');
-
-    return await UserRepository.create(user);
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedUser = { ...user, password: hashedPassword };
+    return await UserRepository.create(hashedUser);
   }
 
   public async update (user:UserInterface) {
