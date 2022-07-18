@@ -1,16 +1,16 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import xl from 'excel4node';
 import { UserInterface } from './../schemas/User';
 import UserRepository from '../repositories/UserRepository';
 
 class UserService {
-  public async index (limit, baseQuery) {
+  private makeQuery (baseQuery) {
     let query = {};
     const {
       name, login, cpf, ageGroup, maxInsertionDate, minInsertionDate,
-      maxBirthDate, minBirthDate, minUpdateDate, maxUpdateDate, status, page = '1'
+      maxBirthDate, minBirthDate, minUpdateDate, maxUpdateDate, status = '1'
     } = baseQuery;
-    const skip = limit * (page - 1);
 
     if (name) {
       query = { ...query, name: { $regex: name, $options: 'i' } };
@@ -79,7 +79,14 @@ class UserService {
     if (status) {
       query = { ...query, status: parseInt(status) };
     }
-    return await UserRepository.index(skip, limit, query);
+    return query;
+  }
+
+  public async index (limit, baseQuery) {
+    const query = this.makeQuery(baseQuery);
+    const skip = limit * (baseQuery?.page - 1);
+
+    return await UserRepository.index(query, skip, limit);
   }
 
   public async login (user: {login:string, password:string}) {
@@ -155,6 +162,55 @@ class UserService {
 
       throw new Error(message);
     }
+  }
+
+  private async createExcel (headers, keys, data) {
+    let headerColumnIndex = 1;
+    let rowIndex = 2;
+
+    const wb = new xl.Workbook();
+    const ws = wb.addWorksheet('Usuários');
+    headers.forEach(header => {
+      ws.column(headerColumnIndex).setWidth(25);
+      ws.cell(1, headerColumnIndex++).string(header);
+    });
+    data.forEach(user => {
+      let columnIndex = 1;
+      keys.forEach(key => {
+        if (typeof user[key].getMonth === 'function') {
+          ws.cell(rowIndex, columnIndex++).string(this.formatDate(user[key]));
+        } else {
+          ws.cell(rowIndex, columnIndex++).string(user[key].toString());
+        }
+      });
+      rowIndex++;
+    });
+    let excelFile;
+    wb.write('Usuários.xlsx');
+    await wb.writeToBuffer().then(function (buffer) {
+      excelFile = buffer;
+    });
+    return excelFile;
+  }
+
+  private padTo2Digits (num) {
+    return num.toString().padStart(2, '0');
+  }
+
+  private formatDate (date) {
+    return [
+      this.padTo2Digits(date.getDate()),
+      this.padTo2Digits(date.getMonth() + 1),
+      date.getFullYear()
+    ].join('/');
+  }
+
+  public async exportExcel (baseQuery) {
+    const query = this.makeQuery(baseQuery);
+    const { paginatedResult: data } = await UserRepository.index(query);
+    const headers = ['Nome', 'Cpf', 'E-mail', 'Telefone', 'Data de Nascimento', 'Nome da Mãe', 'Login', 'Status'];
+    const keys = ['name', 'cpf', 'email', 'phone', 'birthdate', 'motherName', 'login', 'status'];
+    return await this.createExcel(headers, keys, data);
   }
 }
 export default new UserService();

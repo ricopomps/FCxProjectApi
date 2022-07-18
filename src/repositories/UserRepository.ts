@@ -2,16 +2,21 @@ import mongoose from 'mongoose';
 import User, { UserInterface } from '../schemas/User';
 
 class UserRepository {
-  public async index (skip, limit, query) {
+  public async index (query, skip, limit) {
+    const paginatedResultQuery = [
+      { $match: query },
+      { $unset: 'password' }
+    ];
+    if (skip) {
+      paginatedResultQuery.push({ $skip: skip });
+    }
+    if (limit) {
+      paginatedResultQuery.push({ $limit: limit });
+    }
     const [{ paginatedResult, totalCount }] = await User.aggregate([
       {
         $facet: {
-          paginatedResult: [
-            { $match: query },
-            { $skip: skip },
-            { $unset: 'password' },
-            { $limit: limit }
-          ],
+          paginatedResult: paginatedResultQuery,
           totalCount: [
             { $match: query },
             { $count: 'totalCount' }]

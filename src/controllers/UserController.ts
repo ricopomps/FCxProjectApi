@@ -70,6 +70,16 @@ class UserController {
       return res.status(400).json(error.message);
     }
   }
+
+  public async exportExcel (req: Request, res: Response): Promise<Response> {
+    try {
+      const query = req.query;
+      const excel = await UserService.exportExcel(query);
+      return res.json(excel);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  }
 }
 
 export default new UserController();
