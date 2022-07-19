@@ -91,7 +91,7 @@ class UserService {
 
   public async login (user: {login:string, password:string}) {
     const loggedUser = await UserRepository.login(user.login);
-    if (user == null || !(await bcrypt.compare(user.password, loggedUser.password)) || loggedUser.status !== 1) throw new Error('Usuário inválido');
+    if (user === null || loggedUser === null || !(await bcrypt.compare(user.password, loggedUser.password)) || loggedUser.status !== 1) throw new Error('Usuário inválido');
     const accessToken = jwt.sign({ loggedUser }, process.env.ACCESS_TOKEN_SECRET);
 
     return ({ accessToken, loggedUser });
